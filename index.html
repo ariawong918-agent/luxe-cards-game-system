@@ -54,8 +54,8 @@
       ["gold","Gold Foil","金色閃箔","1.99% · 597","High-value abilities; every display box guarantees at least one.","高價值技能；每盒展示盒至少保證一張。"],
       ["black","Black","黑色","0.01% · 3","Matte black, spot UV and a unique ultimate ability. Gift-only jackpot tier.","霧黑加局部光油及獨特終極技能，只用於禮遇大獎。"]
     ];
-    const girlNames=["Sakura","Riri","Mashiro","Lead 04","Lead 05","Lead 06","Lead 07","Lead 08","Lead 09","Lead 10","Lead 11","Lead 12","Lead 13","Lead 14","Lead 15","Lead 16"];
-    const girlZh=["Sakura","Riri","Mashiro","主角 04","主角 05","主角 06","主角 07","主角 08","主角 09","主角 10","主角 11","主角 12","主角 13","主角 14","主角 15","主角 16"];
+    const girlNames=["Sakura","Sayaka","Mashiro","Riri","Rena","Emiri","Serina","Nami","Noa","Hanna","Himeka","Mana","Misaki","Yuzuki","Rin","Arina"];
+    const girlZh=["さくら","さやか","ましろ","りり","れな","えみり","セリナ","なみ","のあ","はんな","ひめか","まな","みさき","ゆずき","りん","ありな"];
     const girlLooks=[["Portrait","肖像"],["Night Look","夜間造型"],["Signature Moment","標誌時刻"]];
     const venueNames=["Grand Entrance","Main Lounge","Champagne Bar","VIP Salon","Diamond Stage","Mirror Hall","Midnight Terrace","Private Booth","Kabukicho Neon","Shinjuku After Dark","Golden Gai Glow","Tokyo Midnight"];
     const venueZh=["華麗入口","主廳","香檳吧","貴賓沙龍","鑽石舞台","鏡廳","午夜露台","私人卡座","歌舞伎町霓虹","新宿夜色","黃金街光影","東京午夜"];
@@ -65,9 +65,22 @@
     const momentZh=["共同祝酒","手心愛心","親密合照姿勢","貼面姿勢","簽名時刻","唇印紀念","一分鐘專屬焦點","香檳耳語","幸運骰子","歌曲獻禮","桌邊自拍","晚安送別","舞蹈焦點","貴賓介紹","香檳祝酒表演","開瓶火花儀式","生日焦點","鑽石登場","壓軸祝酒","午夜慶祝"];
     const symbols=["Champagne","Diamond","Heart","Crown"],symbolGlyph=["♢","◇","♥","♛"];
     const arts={
-      "Sakura":["assets/cast-refs/sakura-ref.jpg","assets/generated-casts/sakura-regenerated-v2.jpg","assets/generated-casts/sakura-generated.png"],
-      "Riri":["assets/cast-refs/riri-ref.jpg","assets/generated-casts/riri-regenerated-v2.jpg","assets/generated-casts/riri-generated.png"],
-      "Mashiro":["assets/cast-refs/mashiro-ref.jpg","assets/generated-casts/mashiro-regenerated-v2.jpg","assets/generated-casts/mashiro-generated.png"]
+      "Sakura":["assets/official-casts/sakura-1.jpg","assets/official-casts/sakura-2.jpg","assets/official-casts/sakura-3.jpg"],
+      "Sayaka":["assets/official-casts/sayaka-1.jpg","assets/official-casts/sayaka-2.jpg","assets/official-casts/sayaka-3.jpg"],
+      "Mashiro":["assets/official-casts/mashiro-1.jpg","assets/official-casts/mashiro-2.jpg","assets/official-casts/mashiro-3.jpg"],
+      "Riri":["assets/official-casts/riri-1.jpg","assets/official-casts/riri-2.jpg","assets/official-casts/riri-3.jpg"],
+      "Rena":["assets/official-casts/rena-1.jpg","assets/official-casts/rena-2.jpg","assets/official-casts/rena-3.jpg"],
+      "Emiri":["assets/official-casts/emiri-1.jpg","assets/official-casts/emiri-2.jpg","assets/official-casts/emiri-3.jpg"],
+      "Serina":["assets/official-casts/serina-1.jpg","assets/official-casts/serina-2.jpg","assets/official-casts/serina-3.jpg"],
+      "Nami":["assets/official-casts/nami-1.jpg","assets/official-casts/nami-2.jpg","assets/official-casts/nami-3.jpg"],
+      "Noa":["assets/official-casts/noa-1.jpg","assets/official-casts/noa-2.jpg","assets/official-casts/noa-3.jpg"],
+      "Hanna":["assets/official-casts/hanna-1.jpg","assets/official-casts/hanna-2.jpg","assets/official-casts/hanna-3.jpg"],
+      "Himeka":["assets/official-casts/himeka-1.jpg","assets/official-casts/himeka-2.jpg","assets/official-casts/himeka-3.jpg"],
+      "Mana":["assets/official-casts/mana-1.jpg","assets/official-casts/mana-2.jpg","assets/official-casts/mana-3.jpg"],
+      "Misaki":["assets/official-casts/misaki-1.jpg","assets/official-casts/misaki-2.jpg","assets/official-casts/misaki-3.jpg"],
+      "Yuzuki":["assets/official-casts/yuzuki-1.jpg","assets/official-casts/yuzuki-2.jpg","assets/official-casts/yuzuki-3.jpg"],
+      "Rin":["assets/official-casts/rin-1.jpg","assets/official-casts/rin-2.jpg","assets/official-casts/rin-3.jpg"],
+      "Arina":["assets/official-casts/arina-1.jpg","assets/official-casts/arina-2.jpg","assets/official-casts/arina-3.jpg"]
     };
     const cards=[]; let seq=1;
     function add(type,en,zh,index,material,img=""){const ability=index%7===0?"Peek":index%5===0?"Shield":index%3===0?"Transfer":"—";cards.push({id:`S1-${String(seq++).padStart(3,"0")}`,type,en,zh,material,img,power:index%10+1,target:(index*7)%10+1,crowd:symbols[index%4],crowdGlyph:symbolGlyph[index%4],link:`${symbols[index%4]} → ${symbols[(index+1+(index%3))%4]}`,ability});}
