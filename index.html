@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#090806" />
+  <title>LUXE Cards — Game System v0.1</title>
+  <style>
+    :root {
+      --ink: #090806;
+      --panel: #11100d;
+      --panel-2: #171510;
+      --champagne: #e8cf94;
+      --gold: #bd8f3c;
+      --cream: #f8f1df;
+      --muted: #a99f8b;
+      --line: rgba(232,207,148,.18);
+      --heart: #d98188;
+      --diamond: #8ec6d8;
+      --crown: #f1c66f;
+      --glass: #c7aee8;
+      --shadow: 0 30px 80px rgba(0,0,0,.42);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--cream);
+      background:
+        radial-gradient(circle at 8% 2%, rgba(189,143,60,.16), transparent 30rem),
+        radial-gradient(circle at 92% 20%, rgba(232,207,148,.08), transparent 25rem),
+        var(--ink);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    body::before {
+      content: "";
+      position: fixed; inset: 0; pointer-events: none; z-index: 20; opacity: .22;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .eyebrow {
+      color: var(--champagne); text-transform: uppercase; letter-spacing: .24em;
+      font-size: 11px; font-weight: 800;
+    }
+    .nav {
+      position: sticky; top: 0; z-index: 15; backdrop-filter: blur(18px);
+      background: rgba(9,8,6,.75); border-bottom: 1px solid var(--line);
+    }
+    .nav-inner { min-height: 66px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { font-family: Georgia, serif; font-size: 22px; letter-spacing: .08em; }
+    .brand span { color: var(--champagne); }
+    .nav-links { display: flex; gap: 22px; color: var(--muted); font-size: 13px; }
+    .nav-links a:hover { color: var(--cream); }
+    .status {
+      display: inline-flex; gap: 8px; align-items: center; border: 1px solid var(--line);
+      padding: 8px 12px; border-radius: 999px; color: var(--champagne); font-size: 11px;
+    }
+    .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #e0a94d; box-shadow: 0 0 16px #e0a94d; }
+    .hero { min-height: 760px; display: grid; place-items: center; overflow: hidden; position: relative; }
+    .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; align-items: center; gap: 60px; padding: 100px 0 80px; }
+    h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; font-weight: 500; }
+    h1 { font-size: clamp(60px, 8vw, 116px); line-height: .86; margin: 18px 0 26px; letter-spacing: -.06em; }
+    h1 em { color: var(--champagne); font-weight: 400; }
+    .lede { color: #d3c9b4; font-size: clamp(17px, 2vw, 22px); max-width: 650px; }
+    .hero-actions { display: flex; gap: 12px; margin-top: 32px; flex-wrap: wrap; }
+    .btn {
+      border: 1px solid var(--champagne); color: var(--ink); background: var(--champagne);
+      padding: 13px 18px; border-radius: 3px; font-weight: 800; font-size: 13px;
+    }
+    .btn.secondary { background: transparent; color: var(--champagne); }
+    .deck-scene { position: relative; min-height: 500px; }
+    .card {
+      position: absolute; width: 252px; aspect-ratio: 63/88; border-radius: 15px;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.08), transparent 25%),
+        radial-gradient(circle at 50% 40%, rgba(232,207,148,.12), transparent 42%),
+        #15120d;
+      border: 1px solid rgba(232,207,148,.45); box-shadow: var(--shadow);
+      overflow: hidden; padding: 16px;
+    }
+    .card::after { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(232,207,148,.16); border-radius: 10px; }
+    .card.one { transform: rotate(-10deg); left: 0; top: 72px; }
+    .card.two { transform: rotate(7deg); right: 6px; top: 14px; }
+    .card.three { transform: rotate(-1deg); left: 90px; top: 110px; z-index: 3; }
+    .portrait {
+      position: absolute; inset: 54px 25px 68px; border-radius: 100px 100px 20px 20px;
+      background:
+        radial-gradient(circle at 50% 28%, rgba(248,241,223,.7) 0 6%, transparent 6.5%),
+        radial-gradient(ellipse at 50% 30%, #c99873 0 14%, transparent 14.5%),
+        radial-gradient(ellipse at 50% 45%, #312119 0 28%, transparent 28.5%),
+        linear-gradient(160deg, #725239, #16110d 70%);
+      opacity: .8;
+    }
+    .corner { position: absolute; z-index: 2; font-weight: 900; font-size: 17px; color: var(--cream); }
+    .corner small { display: block; font-size: 7px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+    .tl { top: 15px; left: 16px; } .tr { top: 15px; right: 16px; text-align: right; }
+    .bl { bottom: 14px; left: 16px; } .br { bottom: 14px; right: 16px; text-align: right; }
+    .card-name { position: absolute; z-index: 2; left: 24px; bottom: 47px; font-family: Georgia,serif; font-size: 18px; }
+    .section { padding: 105px 0; border-top: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: .8fr 1.2fr; gap: 50px; align-items: end; margin-bottom: 48px; }
+    h2 { font-size: clamp(42px, 6vw, 72px); line-height: .98; margin: 10px 0 0; letter-spacing: -.035em; }
+    .section-copy { color: var(--muted); font-size: 18px; max-width: 650px; }
+    .progression { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .step {
+      padding: 28px; background: linear-gradient(145deg,rgba(255,255,255,.025),transparent), var(--panel);
+      border: 1px solid var(--line); min-height: 230px; position: relative; overflow: hidden;
+    }
+    .step-num { font-family: Georgia,serif; color: rgba(232,207,148,.18); font-size: 100px; position: absolute; right: 12px; top: -20px; }
+    .step h3 { font-size: 27px; margin: 45px 0 8px; }
+    .step p { color: var(--muted); }
+    .step strong { color: var(--champagne); }
+    .game-shell { display: grid; grid-template-columns: 280px 1fr; border: 1px solid var(--line); min-height: 560px; background: var(--panel); }
+    .game-tabs { border-right: 1px solid var(--line); padding: 12px; }
+    .game-tab {
+      width: 100%; border: 0; background: transparent; color: var(--muted); text-align: left;
+      padding: 18px; cursor: pointer; border-radius: 3px; margin-bottom: 4px;
+    }
+    .game-tab:hover, .game-tab.active { background: rgba(232,207,148,.08); color: var(--cream); }
+    .game-tab span { display: block; font-weight: 900; font-size: 15px; }
+    .game-tab small { color: var(--muted); }
+    .game-panel { display: none; padding: 46px; }
+    .game-panel.active { display: grid; grid-template-columns: 1fr .8fr; gap: 42px; animation: show .35s ease; }
+    @keyframes show { from { opacity: 0; transform: translateY(5px); } }
+    .game-panel h3 { font-size: 43px; margin: 8px 0 12px; }
+    .rule-list { list-style: none; padding: 0; margin: 28px 0; counter-reset: rules; }
+    .rule-list li { counter-increment: rules; padding: 12px 0 12px 42px; border-top: 1px solid var(--line); position: relative; color: #d6cdbb; }
+    .rule-list li::before { content: counter(rules, decimal-leading-zero); position: absolute; left: 0; color: var(--champagne); font-size: 11px; top: 16px; }
+    .game-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill { border: 1px solid var(--line); color: var(--muted); border-radius: 999px; padding: 7px 10px; font-size: 11px; }
+    .diagram { display: grid; place-items: center; min-height: 370px; background: #0c0b09; border: 1px solid var(--line); padding: 28px; }
+    .mini-table { width: 100%; display: flex; justify-content: center; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .mini-card {
+      width: 74px; aspect-ratio: 63/88; border-radius: 7px; background: #19160f;
+      border: 1px solid rgba(232,207,148,.55); display: grid; place-items: center;
+      color: var(--champagne); font-family: Georgia,serif; font-size: 30px; position: relative;
+    }
+    .mini-card small { position: absolute; bottom: 7px; color: var(--muted); font: 8px Inter,sans-serif; text-transform: uppercase; }
+    .arrow { color: var(--muted); }
+    .loser { box-shadow: 0 0 0 2px rgba(217,129,136,.65); }
+    .winner { box-shadow: 0 0 0 2px rgba(232,207,148,.75), 0 0 28px rgba(232,207,148,.18); }
+    .pack-lab { display: grid; grid-template-columns: .8fr 1.2fr; gap: 20px; }
+    .control-card, .output-card { background: var(--panel); border: 1px solid var(--line); padding: 34px; }
+    .range { width: 100%; accent-color: var(--champagne); }
+    .pack-number { font-family: Georgia,serif; font-size: 90px; color: var(--champagne); line-height: 1; }
+    .unlock-list { display: grid; gap: 10px; margin-top: 24px; }
+    .unlock { padding: 14px 16px; border: 1px solid var(--line); color: var(--muted); display: flex; justify-content: space-between; }
+    .unlock.on { color: var(--cream); background: rgba(232,207,148,.06); border-color: rgba(232,207,148,.45); }
+    .abilities { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    .ability { border: 1px solid var(--line); background: var(--panel); padding: 28px; }
+    .ability-icon { width: 52px; height: 52px; display: grid; place-items: center; border: 1px solid var(--champagne); color: var(--champagne); border-radius: 50%; font-size: 22px; }
+    .ability h3 { font-size: 29px; margin: 28px 0 8px; }
+    .ability p { color: var(--muted); }
+    .timing { color: var(--champagne); font-size: 10px; font-weight: 900; letter-spacing: .15em; }
+    .reward-flow { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; }
+    .flow-item { min-height: 150px; padding: 18px; border: 1px solid var(--line); background: var(--panel); }
+    .flow-item b { color: var(--champagne); font-family: Georgia,serif; font-size: 24px; }
+    .flow-item p { color: var(--muted); font-size: 13px; }
+    .tiers { margin-top: 22px; display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .tier { padding: 20px; border: 1px solid var(--line); }
+    .tier span { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .15em; }
+    .tier strong { display: block; margin-top: 8px; }
+    .review { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .review-card { padding: 32px; border: 1px solid var(--line); background: var(--panel); }
+    .review-card ul { padding-left: 20px; color: var(--muted); }
+    footer { padding: 42px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .hero-grid, .section-head, .pack-lab, .review { grid-template-columns: 1fr; }
+      .deck-scene { max-width: 420px; width: 100%; margin: 0 auto; }
+      .progression, .abilities { grid-template-columns: 1fr; }
+      .game-shell { grid-template-columns: 1fr; }
+      .game-tabs { border-right: 0; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: repeat(2,1fr); }
+      .game-panel.active { grid-template-columns: 1fr; padding: 28px; }
+      .reward-flow, .tiers { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 560px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      .hero { min-height: auto; }
+      .hero-grid { padding: 76px 0 60px; }
+      .deck-scene { transform: scale(.78); transform-origin: top left; width: 128%; margin-bottom: -80px; }
+      .section { padding: 72px 0; }
+      .game-tabs { grid-template-columns: 1fr; }
+      .reward-flow, .tiers { grid-template-columns: 1fr; }
+      .nav-inner { min-height: 58px; }
+      .status { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#top">LUXE <span>CARDS</span></a>
+      <div class="nav-links">
+        <a href="#loop">Product Loop</a>
+        <a href="#games">4 Games</a>
+        <a href="#abilities">Abilities</a>
+        <a href="#rewards">Rewards</a>
+        <a href="#prototype">Prototype</a>
+      </div>
+      <div class="status">v0.1 · Review Draft</div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <header class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">Champagne nightlife · collectible play</div>
+          <h1>One pack.<br><em>Four games.</em></h1>
+          <p class="lede">A 10-card pack starts a complete two-player game. More packs unlock deeper hands, universal abilities, multiplayer tables and team play.</p>
+          <div class="hero-actions">
+            <a class="btn" href="#games">Explore the games</a>
+            <a class="btn secondary" href="#loop">See pack progression</a>
+          </div>
+        </div>
+        <div class="deck-scene" aria-label="LUXE card concept">
+          <div class="card one"><div class="portrait"></div><div class="corner tl">4<small>Duel</small></div><div class="corner tr">8<small>Target</small></div><div class="corner bl">♥<small>Crowd</small></div><div class="corner br">♥→♛<small>Team</small></div><div class="card-name">SAKURA</div></div>
+          <div class="card two"><div class="portrait"></div><div class="corner tl">9<small>Duel</small></div><div class="corner tr">2<small>Target</small></div><div class="corner bl">♢<small>Crowd</small></div><div class="corner br">♢→♕<small>Team</small></div><div class="card-name">RIRI</div></div>
+          <div class="card three"><div class="portrait"></div><div class="corner tl">7<small>Duel</small></div><div class="corner tr">5<small>Target</small></div><div class="corner bl">♛<small>Crowd</small></div><div class="corner br">♛→♥<small>Team</small></div><div class="card-name">MASHIRO</div></div>
+        </div>
+      </div>
+    </header>
+
+    <section id="loop" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="eyebrow">The commercial engine</div><h2>Play now.<br>Want more.</h2></div>
+          <p class="section-copy">The smallest table is one customer and one girl. The first pack must feel complete; every additional pack must add a reason to keep playing.</p>
+        </div>
+        <div class="progression">
+          <article class="step"><span class="step-num">01</span><h3>Basic Play</h3><p><strong>1 pack · 10 cards</strong><br>Shuffle, deal five each and start LUXE Duel immediately. Abilities stay off.</p></article>
+          <article class="step"><span class="step-num">02</span><h3>Advanced Play</h3><p><strong>2+ packs</strong><br>Larger hands create real choices. Peek, Shield and Transfer automatically switch on.</p></article>
+          <article class="step"><span class="step-num">03</span><h3>Evolved Play</h3><p><strong>Larger pool</strong><br>Unlock 4–6 player Target, 6–10 player Crowd, team chains and minor variants.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="games" class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="eyebrow">Four corners · four engines</div><h2>The game room</h2></div>
+          <p class="section-copy">Every card carries four independent data systems. Pick a game by table size, then read only its corner.</p>
+        </div>
+        <div class="game-shell">
+          <div class="game-tabs">
+            <button class="game-tab active" data-game="duel"><span>⚔ LUXE Duel</span><small>2–3 players · upper-left</small></button>
+            <button class="game-tab" data-game="target"><span>◎ Crown Target</span><small>4–6 players · upper-right</small></button>
+            <button class="game-tab" data-game="crowd"><span>♛ LUXE Crowd</span><small>6–10 players · lower-left</small></button>
+            <button class="game-tab" data-game="crew"><span>◇ Champagne Crew</span><small>2v2 / 3v3 · lower-right</small></button>
+          </div>
+          <article class="game-panel active" id="duel">
+            <div><div class="eyebrow">High card · hidden choice</div><h3>LUXE Duel</h3><div class="game-meta"><span class="pill">1 pack entry</span><span class="pill">5 rounds max</span><span class="pill">3-win streak ends</span></div><ol class="rule-list"><li>Shuffle 10 cards and deal five each.</li><li>Both players choose face down and reveal together.</li><li>Higher Duel Power wins; loser takes one sip.</li><li>A tie means both toast together.</li><li>Overall loser takes one final sip.</li></ol></div>
+            <div class="diagram"><div class="mini-table"><div class="mini-card loser">4<small>sip</small></div><span class="arrow">VS</span><div class="mini-card winner">9<small>win</small></div></div></div>
+          </article>
+          <article class="game-panel" id="target">
+            <div><div class="eyebrow">Closest wins · final round ×2</div><h3>Crown Target</h3><div class="game-meta"><span class="pill">4–6 players</span><span class="pill">3 rounds</span><span class="pill">2–3 packs</span></div><ol class="rule-list"><li>Flip one undealt card as the Target.</li><li>Everyone secretly chooses one Target Number.</li><li>Closest wins; farthest takes one sip.</li><li>Rounds one and two score 1 point.</li><li>The final round scores 2 points.</li></ol></div>
+            <div class="diagram"><div><div class="eyebrow" style="text-align:center;margin-bottom:20px">Target · 5</div><div class="mini-table"><div class="mini-card loser">1<small>farthest</small></div><div class="mini-card winner">4<small>closest</small></div><div class="mini-card">8<small>safe</small></div></div></div></div>
+          </article>
+          <article class="game-panel" id="crowd">
+            <div><div class="eyebrow">Read the room · break the pattern</div><h3>LUXE Crowd</h3><div class="game-meta"><span class="pill">6–10 players</span><span class="pill">3 rounds</span><span class="pill">4 icons</span></div><ol class="rule-list"><li>Everyone chooses one Crowd Icon in secret.</li><li>Reveal all cards together.</li><li>Rounds one and two: majority is safe.</li><li>The smallest group takes one sip.</li><li>Final round reverses: minority wins.</li></ol></div>
+            <div class="diagram"><div class="mini-table"><div class="mini-card">♛</div><div class="mini-card">♛</div><div class="mini-card">♛</div><div class="mini-card loser">♥<small>minority</small></div><div class="mini-card">♢</div><div class="mini-card">♢</div></div></div>
+          </article>
+          <article class="game-panel" id="crew">
+            <div><div class="eyebrow">Talk · bluff · connect</div><h3>Champagne Crew</h3><div class="game-meta"><span class="pill">2v2 / 3v3</span><span class="pill">Best of 3</span><span class="pill">10-sec build</span></div><ol class="rule-list"><li>Teammates discuss links but cannot show cards.</li><li>Every player commits one card.</li><li>Reveal, then build a chain in 10 seconds.</li><li>Longest valid chain wins the round.</li><li>A tie triggers a fresh sudden-death build.</li></ol></div>
+            <div class="diagram"><div class="mini-table"><div class="mini-card winner">♥→♢</div><span class="arrow">→</span><div class="mini-card winner">♢→♛</div><span class="arrow">→</span><div class="mini-card winner">♛→♕</div></div></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <div><div class="eyebrow">Interactive pack lab</div><h2>What unlocks?</h2></div>
+          <p class="section-copy">Move the pack count. The experience grows without invalidating the one-pack entry game.</p>
+        </div>
+        <div class="pack-lab">
+          <div class="control-card"><div class="eyebrow">Packs in play</div><div class="pack-number" id="packNumber">1</div><input id="packRange" class="range" type="range" min="1" max="4" value="1" /><p style="color:var(--muted)">Each pack adds 10 playable, non-duplicate cards.</p></div>
+          <div class="output-card"><div class="eyebrow">Available experience</div><div class="unlock-list"><div class="unlock on" data-min="1"><span>Basic LUXE Duel</span><b>10 cards</b></div><div class="unlock" data-min="2"><span>Universal abilities</span><b>Peek · Shield · Transfer</b></div><div class="unlock" data-min="2"><span>Crown Target / 2v2 Crew</span><b>table dependent</b></div><div class="unlock" data-min="3"><span>6–10P Crowd / 3v3 Crew</span><b>full mode</b></div><div class="unlock" data-min="4"><span>Deep hand variants</span><b>maximum choice</b></div></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="abilities" class="section">
+      <div class="wrap">
+        <div class="section-head"><div><div class="eyebrow">2+ packs</div><h2>Universal abilities</h2></div><p class="section-copy">One ability language works across all four games. An ability activates only when that card is committed.</p></div>
+        <div class="abilities">
+          <article class="ability"><div class="ability-icon">◉</div><h3>Peek</h3><span class="timing">BEFORE · 15%</span><p>Randomly view one card from one chosen opponent, then lock the Peek card as your play.</p></article>
+          <article class="ability"><div class="ability-icon">◇</div><h3>Shield</h3><span class="timing">AFTER · 25%</span><p>Cancel your normal one-sip loss for this round. It can also block a transferred sip.</p></article>
+          <article class="ability"><div class="ability-icon">↝</div><h3>Transfer</h3><span class="timing">AFTER · 60%</span><p>Move your one sip to another eligible player. It never adds a sip and cannot chain.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="rewards" class="section">
+      <div class="wrap">
+        <div class="section-head"><div><div class="eyebrow">Open · validate · keep playing</div><h2>Reward flow</h2></div><p class="section-copy">Rewards come from opening the card, never from winning the drinking game. The pack buyer always owns the reward.</p></div>
+        <div class="reward-flow">
+          <div class="flow-item"><b>01</b><p>Open the sealed pack and reveal the exact printed reward.</p></div>
+          <div class="flow-item"><b>02</b><p>Staff enters the unique card serial in the shared POS or form.</p></div>
+          <div class="flow-item"><b>03</b><p>System confirms valid-unused or already redeemed.</p></div>
+          <div class="flow-item"><b>04</b><p>Fulfil immediately before the game starts.</p></div>
+          <div class="flow-item"><b>05</b><p>Customer keeps the redeemed card; it remains playable.</p></div>
+        </div>
+        <div class="tiers"><div class="tier"><span>Silver</span><strong>Small benefit</strong></div><div class="tier"><span>Gold</span><strong>Medium benefit</strong></div><div class="tier"><span>Champagne</span><strong>High benefit</strong></div><div class="tier"><span>Black Diamond</span><strong>Premium benefit</strong></div></div>
+      </div>
+    </section>
+
+    <section id="prototype" class="section">
+      <div class="wrap">
+        <div class="section-head"><div><div class="eyebrow">Next gate</div><h2>Prototype plan</h2></div><p class="section-copy">The system is a review draft. Prototype production begins only after approval.</p></div>
+        <div class="review">
+          <div class="review-card"><div class="eyebrow">40-card test set</div><h3 style="font-size:32px">Four collated packs</h3><ul><li>10 polished visual cards</li><li>30 functional mechanics cards</li><li>All four game engines</li><li>2+ pack ability activation</li><li>Project-team tabletop simulation</li></ul></div>
+          <div class="review-card"><div class="eyebrow">Review required</div><h3 style="font-size:32px">Before live play</h3><ul><li>Drink service and stop-play rules</li><li>Reward values, odds and substitutions</li><li>Japanese prize / alcohol / venue review</li><li>Serial-ledger audit and offline fallback</li><li>Pack guarantee and collation proof</li></ul></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap">LUXE Cards · Game System v0.1 · Review Draft · 28 July 2026</div></footer>
+  <script>
+    const tabs = document.querySelectorAll('.game-tab');
+    const panels = document.querySelectorAll('.game-panel');
+    tabs.forEach(tab => tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.game).classList.add('active');
+    }));
+    const range = document.getElementById('packRange');
+    const number = document.getElementById('packNumber');
+    const unlocks = document.querySelectorAll('.unlock');
+    range.addEventListener('input', () => {
+      const value = Number(range.value);
+      number.textContent = value;
+      unlocks.forEach(item => item.classList.toggle('on', value >= Number(item.dataset.min)));
+    });
+  </script>
+</body>
+</html>
